@@ -1,53 +1,109 @@
 <template>
-    <div>
-        <el-collapse accordion>
-            <el-collapse-item>
-                <template slot="title">
-                    一致性 Consistency<i class="header-icon el-icon-info"></i>
-                </template>
-                <div>与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；</div>
-                <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
-            </el-collapse-item>
-            <el-collapse-item title="反馈 Feedback">
-                <div>控制反馈：通过界面样式和交互动效让用户可以清晰的感知自己的操作；</div>
-                <div>页面反馈：操作后，通过页面元素的变化清晰地展现当前状态。</div>
-            </el-collapse-item>
-            <el-collapse-item title="效率 Efficiency">
-                <div>简化流程：设计简洁直观的操作流程；</div>
-                <div>清晰明确：语言表达清晰且表意明确，让用户快速理解进而作出决策；</div>
-                <div>帮助用户识别：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。</div>
-            </el-collapse-item>
-            <el-collapse-item title="可控 Controllability">
-                <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
-                <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
-            </el-collapse-item>
-        </el-collapse>
-        <!--<el-carousel :interval="4000" type="card" height="200px">-->
-            <!--<el-carousel-item v-for="item in swipers" :key="item.id">-->
-                <!--<img :src="item.url" alt="swiperImage">-->
-            <!--</el-carousel-item>-->
-        <!--</el-carousel>-->
-    </div>
+  <div id="wrapper" ref="wrapper">
+    <div v-model="top" class="top">{{top}}</div>
+    <div class="bottom">{{bottom}}</div>
+    <div class="left">{{left}}</div>
+    <div class="right">{{right}}</div>
+  </div>
 </template>
-
 <script>
 export default {
-  name: "panels",
-    data(){
-      return{
-          // swipers:[
-          //     {id:1,url: require('../../assets/swiper/bg1.jpg')},
-          //     {id:2,url: require('../../assets/swiper/bg2.jpg')},
-          //     {id:3,url: require('../../assets/swiper/bg3.jpg')},
-          // ]
-      }
-    },
-    methods:{},
-    mounted:{},
-    computed:{}
-
+  name: "widget",
+  data() {
+    return {
+      top: 'top-page',
+      bottom: 'bottom-page',
+      left: 'left-page',
+      right:'right-page'
+    };
+  },
+  mounted() {
+    this.listenMouseEvent();
+  },
+  beforeDestroy() {
+    document.onmousedown = null;
+  },
+  destroyed(){
+  },
+  watch:{
+    top(){
+      console.log('监听了' + this.top);
+    }
+  },
+  methods: {
+    listenMouseEvent() {
+      document.onmousedown = ev => {
+        //在包裹层上上摁下时，获取当前鼠标的位置
+        let x = ev.clientX;
+        let y = ev.clientY;
+        document.onmousemove = ev => {
+          //鼠标移动时
+          let x1 = ev.clientX - x + 30; //当前位置减去下时鼠标的位置，就获取移动了多少度，应为一开始有初始角度所以加30°
+          let y1 = ev.clientY - y - 30; //甚至样式每次鼠标移动式更改样式
+          this.$refs.wrapper.style.transform = `perspective(1000px) rotateY(${x1}deg) rotateX(${-y1}deg)`;
+        };
+        document.onmouseup = () => {
+          document.onmousemove = null;
+        };
+      };
+    }
+  }
 };
 </script>
+<style scoped lang="stylus">
+#wrapper {
+  width: 200px;
+  height: 200px;
+  margin: 150px auto;
+  /*给父元素相对定位*/
+  position: relative;
+  /*父元素设为3d*/
+  transform-style: preserve-3d;
+  /*设置父元素得景深*/
+  transform: perspective(1000px) rotateY(30deg) rotateX(30deg);
+}
 
-<style lang="stylus" scoped>
+/* 每个面的样式设置 */
+#wrapper > div {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 20px;
+  text-align: center;
+  line-height: 200px;
+  font-size: 30px;
+  font-weight: 600;
+  color: #fff;
+}
+
+#wrapper > div:nth-child(1) {
+  transform: translateZ(100px);
+  background: rgba(0, 0, 255, 0.2);
+}
+
+#wrapper > div:nth-child(2) {
+  transform: translateZ(-100px);
+  user-select: none;
+  background: rgba(0, 255, 0, 0.6);
+}
+
+#wrapper > div:nth-child(3) {
+  transform: rotateX(90deg) translateZ(100px);
+  background: rgba(255, 0, 0, 0.2);
+}
+
+#wrapper > div:nth-child(4) {
+  transform: rotateX(90deg) translateZ(-100px);
+  background: rgba(255, 255, 0, 0.2);
+}
+
+#wrapper > div:nth-child(5) {
+  transform: rotateY(90deg) translateZ(-100px);
+  background: rgba(0, 255, 255, 0.2);
+}
+
+#wrapper > div:nth-child(6) {
+  transform: rotateY(90deg) translateZ(100px);
+  background: rgba(255, 0, 255, 0.2);
+}
 </style>

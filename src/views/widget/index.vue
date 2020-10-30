@@ -1,109 +1,61 @@
 <template>
-    <div id="wrapper" ref="wrapper">
-        <div v-model="top" class="top">{{top}}</div>
-        <div class="bottom">{{bottom}}</div>
-        <div class="left">{{left}}</div>
-        <div class="right">{{right}}</div>
-    </div>
+  <div id="container">
+
+  </div>
 </template>
+
 <script>
-    export default {
-        name: "widget",
-        data() {
-                return {
-                top: 'top-page',
-                bottom: 'bottom-page',
-                left: 'left-page',
-                right:'right-page'
-            };
-        },
-        mounted() {
-            this.listenMouseEvent();
-        },
-        beforeDestroy() {
-            document.onmousedown = null;
-        },
-        destroyed(){
-        },
-        watch:{
-            top(){
-                console.log('监听了' + this.top);
-            }
-        },
-        methods: {
-            listenMouseEvent() {
-                document.onmousedown = ev => {
-                    //在包裹层上上摁下时，获取当前鼠标的位置
-                    let x = ev.clientX;
-                    let y = ev.clientY;
-                    document.onmousemove = ev => {
-                        //鼠标移动时
-                        let x1 = ev.clientX - x + 30; //当前位置减去下时鼠标的位置，就获取移动了多少度，应为一开始有初始角度所以加30°
-                        let y1 = ev.clientY - y - 30; //甚至样式每次鼠标移动式更改样式
-                        this.$refs.wrapper.style.transform = `perspective(1000px) rotateY(${x1}deg) rotateX(${-y1}deg)`;
-                    };
-                    document.onmouseup = () => {
-                        document.onmousemove = null;
-                    };
-                };
-            }
-        }
-    };
+import * as Three from 'three'
+export default {
+  name: 'HelloWorld',
+  props: {
+  },
+  data(){
+    return{
+      camera: null,
+      scene: null,
+      renderer: null,
+      mesh: null
+    }
+  },
+  mounted() {
+    this.init();
+    this.animate();
+  },
+  methods:{
+    init: function() {
+      let container = document.getElementById('container');
+
+      this.camera = new Three.PerspectiveCamera(70, container.clientWidth/container.clientHeight, 0.01, 10);
+      this.camera.position.z = 1;
+
+      this.scene = new Three.Scene();
+
+      let geometry = new Three.BoxGeometry(0.2, 0.2, 0.2);
+      let material = new Three.MeshNormalMaterial();
+
+      this.mesh = new Three.Mesh(geometry, material);
+      this.scene.add(this.mesh);
+
+      this.renderer = new Three.WebGLRenderer({antialias: true});
+      this.renderer.setSize(container.clientWidth, container.clientHeight);
+      container.appendChild(this.renderer.domElement);
+
+    },
+    animate: function() {
+      requestAnimationFrame(this.animate);
+      this.mesh.rotation.x += 0.01;
+      this.mesh.rotation.y += 0.02;
+      this.renderer.render(this.scene, this.camera);
+    }
+  }
+}
 </script>
-<style scoped lang="stylus">
-    #wrapper {
-        width: 200px;
-        height: 200px;
-        margin: 150px auto;
-        /*给父元素相对定位*/
-        position: relative;
-        /*父元素设为3d*/
-        transform-style: preserve-3d;
-        /*设置父元素得景深*/
-        transform: perspective(1000px) rotateY(30deg) rotateX(30deg);
-    }
-
-    /* 每个面的样式设置 */
-    #wrapper > div {
-        position: absolute;
-        width: 200px;
-        height: 200px;
-        border-radius: 20px;
-        text-align: center;
-        line-height: 200px;
-        font-size: 30px;
-        font-weight: 600;
-        color: #fff;
-    }
-
-    #wrapper > div:nth-child(1) {
-        transform: translateZ(100px);
-        background: rgba(0, 0, 255, 0.2);
-    }
-
-    #wrapper > div:nth-child(2) {
-        transform: translateZ(-100px);
-        user-select: none;
-        background: rgba(0, 255, 0, 0.6);
-    }
-
-    #wrapper > div:nth-child(3) {
-        transform: rotateX(90deg) translateZ(100px);
-        background: rgba(255, 0, 0, 0.2);
-    }
-
-    #wrapper > div:nth-child(4) {
-        transform: rotateX(90deg) translateZ(-100px);
-        background: rgba(255, 255, 0, 0.2);
-    }
-
-    #wrapper > div:nth-child(5) {
-        transform: rotateY(90deg) translateZ(-100px);
-        background: rgba(0, 255, 255, 0.2);
-    }
-
-    #wrapper > div:nth-child(6) {
-        transform: rotateY(90deg) translateZ(100px);
-        background: rgba(255, 0, 255, 0.2);
-    }
+<style scoped>
+#container {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 1000px;
+}
 </style>

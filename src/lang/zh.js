@@ -14,7 +14,7 @@ export default {
     page2: "组件2",
     page3: "组件3",
     profile: "个人中心",
-    panels: "卡片展示"
+    panels: "魔方"
   },
   app: {
     switchlang: "切换语言成功",

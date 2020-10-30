@@ -14,7 +14,7 @@ export default {
     page2: "page2",
     page3: "page3",
     profile: "Profile",
-    panels: "Panels"
+    panels: "Rubik'sCube"
   },
   app: {
     switchlang: "Switch Language Success",
